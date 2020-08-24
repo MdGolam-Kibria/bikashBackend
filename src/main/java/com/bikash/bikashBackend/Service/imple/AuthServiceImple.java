@@ -97,7 +97,7 @@ public class AuthServiceImple implements AuthService {
                 return ResponseBuilder.getSuccessResponce(HttpStatus.BAD_REQUEST, "For Create User Account IsMerchant Must Be false", null);
             }
 //now save account opening time Transaction,TransactionDetails,and set userBalance
-            Response response = createTransaction(user);
+            Response response = createTransaction(user,"Create User");
             return response;
         }
         if (userRepository.findUserPhoneByPhone(user.getPhone()).equals(user.getPhone())) {
@@ -130,7 +130,7 @@ public class AuthServiceImple implements AuthService {
                 return ResponseBuilder.getSuccessResponce(HttpStatus.BAD_REQUEST, "For Create Merchant Account IsMerchant Must Be True", null);
             }
 //now save account opening time Transaction,TransactionDetails,and set userBalance
-            Response response = createTransaction(user);
+            Response response = createTransaction(user,"Create Marchent");
             return response;
         }
         if (userRepository.findUserPhoneByPhone(user.getPhone()).equals(user.getPhone())) {
@@ -151,11 +151,11 @@ public class AuthServiceImple implements AuthService {
         return role;
     }
 
-    public Response createTransaction(User user) {
+    public Response createTransaction(User user,String transactionsRef) {
         if (user != null) {
-            Transactions transactions = transactionService.create(user.getId(), user.getOpeningBalance(), 0, new Date());
+            Transactions transactions = transactionService.create(user.getId(), user.getOpeningBalance(), 0, new Date(), transactionsRef);
             if (transactions != null) {
-                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), user.getOpeningBalance());
+                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), user.getOpeningBalance(),0,new Date());
                 if (transactionDetails != null) {
                     UserBalance userBalance = userBalanceService.create(user.getId(), user.getOpeningBalance(),user.getCreatedAt());
                     if (userBalance != null) {

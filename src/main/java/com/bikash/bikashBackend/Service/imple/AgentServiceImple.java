@@ -55,7 +55,7 @@ public class AgentServiceImple implements AgentService {
                 user.setRoles(Collections.singletonList(role));
                 user = userRepository.save(user);
                 ///set success response
-                return authServiceImple.createTransaction(user);
+                return authServiceImple.createTransaction(user,"createAgent");
             } else if (user.getIsAgent() == false) {
                 return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "For Create Agent Account IsAgent Must Be True");
             }
