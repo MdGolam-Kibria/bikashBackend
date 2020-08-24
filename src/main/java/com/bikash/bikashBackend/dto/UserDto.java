@@ -1,5 +1,6 @@
 package com.bikash.bikashBackend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -17,13 +18,20 @@ public class UserDto {
     @JsonProperty
     private String password;
     //@AssertTrue
-    @NotNull(message = "isMerchant is Mandatory")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isMerchant;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isAgent;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String tradeLicence;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String instituteName;
+
     @NotEmpty(message = "Phone Number is Mandatory")
     @Pattern(regexp = "^(?:\\+?88)?01[135-9]\\d{8}$", message = "invalid mobile number.")
     @Size(max = 11, message = "digits should be 11")
     private String phone;
-    @DecimalMin(value = "500.00",message = "Opening balance must be 500 or more")
+    @DecimalMin(value = "500.00", message = "Opening balance must be 500 or more")
     private double openingBalance;
     @NotNull(message = "Nid is Mandatory")
     //@Min(value = 10, message = "Nid length should be 10 or more")

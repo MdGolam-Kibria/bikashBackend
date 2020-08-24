@@ -74,7 +74,11 @@ public class AuthServiceImple implements AuthService {
     public Response createUserAccount(UserDto userDto, BindingResult result, HttpServletRequest request) {
         User user = modelMapper.map(userDto, User.class);
         user.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        user.setCreatedAt(new Date());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setIsAgent(false);
+        user.setTradeLicence(null);
+        user.setInstituteName(null);
         if (userRepository.findUserPhoneByPhone(user.getPhone()) == null) {
             Role role;
             role = new Role();
@@ -90,14 +94,14 @@ public class AuthServiceImple implements AuthService {
                 user = userRepository.save(user);
             }
             if (user.getIsMerchant()) {
-                return ResponseBuilder.getSuccessResponce(HttpStatus.NOT_ACCEPTABLE, "For Create User Account IsMerchant Must Be false", null);
+                return ResponseBuilder.getSuccessResponce(HttpStatus.BAD_REQUEST, "For Create User Account IsMerchant Must Be false", null);
             }
 //now save account opening time Transaction,TransactionDetails,and set userBalance
             Response response = createTransaction(user);
             return response;
         }
         if (userRepository.findUserPhoneByPhone(user.getPhone()).equals(user.getPhone())) {
-            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "You already have an account with this phone number , try another one number");
+            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "You already have an account with this phone number , try to login");
         }
         return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
     }
@@ -106,8 +110,14 @@ public class AuthServiceImple implements AuthService {
     public Response createMerchantAccount(UserDto userDto, BindingResult bindingResult, HttpServletRequest request) {
 
         User user = modelMapper.map(userDto, User.class);
+        user.setCreatedAt(new Date());
         user.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setIsAgent(false);
+
+        if (user.getInstituteName()==null || user.getTradeLicence()==null){
+            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE,"For Create Merchant Account InstituteName/TradeLicence is mandatory");
+        }
 
         if (userRepository.findUserPhoneByPhone(user.getPhone()) == null) {
             Role role;
@@ -117,14 +127,14 @@ public class AuthServiceImple implements AuthService {
                 user.setRoles(Collections.singletonList(role));
                 user = userRepository.save(user);
             } else {
-                return ResponseBuilder.getSuccessResponce(HttpStatus.NOT_ACCEPTABLE, "For Create Merchant Account IsMerchant Must Be True", null);
+                return ResponseBuilder.getSuccessResponce(HttpStatus.BAD_REQUEST, "For Create Merchant Account IsMerchant Must Be True", null);
             }
 //now save account opening time Transaction,TransactionDetails,and set userBalance
             Response response = createTransaction(user);
             return response;
         }
         if (userRepository.findUserPhoneByPhone(user.getPhone()).equals(user.getPhone())) {
-            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "You already have an account with this phone number , try another one number");
+            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "You already have an account with this phone number , try to login");
         }
         return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
     }
@@ -147,7 +157,7 @@ public class AuthServiceImple implements AuthService {
             if (transactions != null) {
                 TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), user.getOpeningBalance());
                 if (transactionDetails != null) {
-                    UserBalance userBalance = userBalanceService.create(user.getId(), user.getOpeningBalance());
+                    UserBalance userBalance = userBalanceService.create(user.getId(), user.getOpeningBalance(),user.getCreatedAt());
                     if (userBalance != null) {
                         return ResponseBuilder.getSuccessResponseForTransactions(HttpStatus.CREATED, "Account Successfully Created", transactionDetails.getTransactionId());
                     }

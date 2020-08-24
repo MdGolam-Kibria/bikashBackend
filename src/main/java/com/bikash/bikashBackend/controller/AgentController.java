@@ -1,8 +1,9 @@
-package com.bikash.bikashBackend.Controller;
+package com.bikash.bikashBackend.controller;
 
-import com.bikash.bikashBackend.Service.AuthService;
+import com.bikash.bikashBackend.Service.AgentService;
 import com.bikash.bikashBackend.View.Response;
 import com.bikash.bikashBackend.annotation.ApiController;
+import com.bikash.bikashBackend.annotation.IsAdmin;
 import com.bikash.bikashBackend.annotation.ValidateData;
 import com.bikash.bikashBackend.dto.UserDto;
 import com.bikash.bikashBackend.util.UrlConstraint;
@@ -13,23 +14,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @ApiController
-@RequestMapping(UrlConstraint.UserManagement.ROOT)
-public class UserController {
-    private final AuthService authService;
+@RequestMapping(UrlConstraint.AgentManagement.ROOT)
+public class AgentController {
+    private final AgentService agentService;
 
     @Autowired
-    public UserController(AuthService authService) {
-        this.authService = authService;
+    public AgentController(AgentService agentService) {
+        this.agentService = agentService;
     }
 
-
-    @PostMapping(UrlConstraint.UserManagement.CREATE)
+    @PostMapping(UrlConstraint.AgentManagement.CREATE)
     @ValidateData
-    public Response createUser(@RequestBody @Valid UserDto userDto, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
-        return authService.createUserAccount(userDto, bindingResult, request);
+    @IsAdmin
+    public Response createAgent(@RequestBody @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
+        return agentService.createAgent(userDto, request);
     }
 }

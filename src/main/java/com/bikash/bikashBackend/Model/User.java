@@ -14,6 +14,11 @@ public class User extends BaseModel {
     private String username;
     private String password;
     private Boolean isMerchant;
+    private Boolean isAgent;
+
+    private String tradeLicence;
+    private String instituteName;
+
     private double openingBalance;
     private Long nid;
     private String phone;

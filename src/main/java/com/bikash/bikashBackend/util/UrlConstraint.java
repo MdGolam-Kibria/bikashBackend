@@ -16,6 +16,14 @@ public class UrlConstraint {
         public static final String GET = "/{id}";
         public static final String GET_ALL = "/all";
     }
+    public static class AgentManagement {
+        public static final String ROOT = API + VERSION + "/Agent";
+        public static final String CREATE = "/create";
+        public static final String UPDATE = "/{id}";
+        public static final String DELETE = "/{id}";
+        public static final String GET = "/{id}";
+        public static final String GET_ALL = "/all";
+    }
     public static class UserManagement {
         public static final String ROOT = API + VERSION + "/users";
         public static final String GET_USER = "/all-User";
