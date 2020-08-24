@@ -26,7 +26,6 @@ public class RechargeServiceImple implements RechargeService {
     private final TransactionDetailsService transactionDetailsService;
     private final UserBalanceService userBalanceService;
 
-//    String currentAdmin = SecurityContextHolder.getContext().getAuthentication().getName();
 
     @Autowired
     public RechargeServiceImple(UserRepository userRepository, ModelMapper modelMapper, TransactionService transactionService, TransactionDetailsService transactionDetailsService, UserBalanceService userBalanceService) {
@@ -40,13 +39,13 @@ public class RechargeServiceImple implements RechargeService {
     @Override
     public Response recharge(RechargeDto rechargeDto, HttpServletRequest request) {
         Recharge recharge = modelMapper.map(rechargeDto, Recharge.class);
-        if (userRepository.findUserPhoneByPhone(recharge.getPhone())==null){
-            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_FOUND,"Sorry, You Dont Have Any User With This Account");
+        if (userRepository.findUserPhoneByPhone(recharge.getPhone()) == null) {
+            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_FOUND, "Sorry, You Dont Have Any User With This Account");
         }
         if (userRepository.findUserPhoneByPhone(recharge.getPhone()).equals(recharge.getPhone())) {
             User user = userRepository.findByPhoneAndIsActiveTrue(recharge.getPhone());
-            if (user!=null){
-                Response response = transactions(user,recharge,request,new Date());
+            if (user != null) {
+                Response response = transactions(user, recharge, request, new Date());
                 return response;
             }
         }
@@ -55,9 +54,9 @@ public class RechargeServiceImple implements RechargeService {
 
     public Response transactions(User user, Recharge recharge, HttpServletRequest request, Date date) {
         if (recharge != null) {
-            Transactions transactions = transactionService.create(user.getId(), 0, recharge.getAmount(), date, "currentAdmin");
+            Transactions transactions = transactionService.create(user.getId(), 0, recharge.getAmount(), date, SecurityContextHolder.getContext().getAuthentication().getName());
             if (transactions != null) {
-                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), 0, recharge.getAmount(),date);
+                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), 0, recharge.getAmount(), date);
                 if (transactionDetails != null) {
                     UserBalance userBalance = userBalanceService.create(user.getId(), recharge.getAmount(), date);
                     if (userBalance != null) {

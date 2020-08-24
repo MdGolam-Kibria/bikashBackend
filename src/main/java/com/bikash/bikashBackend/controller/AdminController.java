@@ -1,5 +1,6 @@
 package com.bikash.bikashBackend.controller;
 
+import com.bikash.bikashBackend.Service.AgentService;
 import com.bikash.bikashBackend.Service.AuthService;
 import com.bikash.bikashBackend.Service.RechargeService;
 import com.bikash.bikashBackend.View.Response;
@@ -22,11 +23,13 @@ import javax.validation.Valid;
 @RequestMapping(UrlConstraint.AdminManagement.ROOT)
 public class AdminController {
     private final AuthService authService;
+    private final AgentService agentService;
     private final RechargeService rechargeService;
 
     @Autowired
-    public AdminController(AuthService authService, RechargeService rechargeService) {
+    public AdminController(AuthService authService, AgentService agentService, RechargeService rechargeService) {
         this.authService = authService;
+        this.agentService = agentService;
         this.rechargeService = rechargeService;
     }
 
@@ -35,6 +38,13 @@ public class AdminController {
     @ValidateData
     public Response createMerchant(@RequestBody @Valid UserDto userDto, BindingResult bindingResult, HttpServletRequest request) {
         return authService.createMerchantAccount(userDto, bindingResult, request);
+    }
+
+    @PostMapping(UrlConstraint.AGENT + UrlConstraint.AgentManagement.CREATE)
+    @ValidateData
+    @IsAdmin
+    public Response createAgent(@RequestBody @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
+        return agentService.createAgent(userDto, request);
     }
 
     @IsAdmin
