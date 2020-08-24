@@ -6,5 +6,5 @@ import com.bikash.bikashBackend.dto.RechargeDto;
 import javax.servlet.http.HttpServletRequest;
 
 public interface RechargeService {
-    Response recharge(RechargeDto recharge, HttpServletRequest request);
+    Response recharge(RechargeDto recharge, HttpServletRequest request,String transactionType);
 }

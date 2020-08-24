@@ -20,7 +20,7 @@ public class TransactionDetailsServiceImple implements TransactionDetailsService
     }
 
     @Override
-    public TransactionDetails create(Long transactionId, Long userId, double openingBalance, double transactionAmount, Date date) {
+    public TransactionDetails create(Long transactionId, Long userId, double openingBalance, double transactionAmount, Date date,String transactionType) {
         if (openingBalance == 0) {
             //this is not a account opening time Transaction..This is another time Transaction
         }
@@ -28,7 +28,7 @@ public class TransactionDetailsServiceImple implements TransactionDetailsService
         transactionDetails.setCreatedAt(date);
         transactionDetails.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         transactionDetails.setTransactionId(transactionId);
-        transactionDetails.setTransactionType(UseUtil.CREDIT);
+        transactionDetails.setTransactionType(transactionType);
         transactionDetails.setDebitedBy(null);//question
         transactionDetails.setCreditedTo(userId);
         transactionDetails = transactionDetailsRepository.save(transactionDetails);

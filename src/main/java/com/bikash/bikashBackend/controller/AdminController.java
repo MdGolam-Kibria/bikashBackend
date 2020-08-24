@@ -10,6 +10,7 @@ import com.bikash.bikashBackend.annotation.ValidateData;
 import com.bikash.bikashBackend.dto.RechargeDto;
 import com.bikash.bikashBackend.dto.UserDto;
 import com.bikash.bikashBackend.util.UrlConstraint;
+import com.bikash.bikashBackend.util.UseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,6 @@ public class AdminController {
     @ValidateData
     @PostMapping(UrlConstraint.RECHARGE + UrlConstraint.AGENT)
     public Response rechargeToAgent(@RequestBody @Valid RechargeDto rechargeDto, BindingResult result, HttpServletRequest request) {
-        return rechargeService.recharge(rechargeDto, request);
+        return rechargeService.recharge(rechargeDto, request, UseUtil.CREDIT);
     }
 }

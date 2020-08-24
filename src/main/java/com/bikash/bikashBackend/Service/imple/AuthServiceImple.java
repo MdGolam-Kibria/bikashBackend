@@ -14,6 +14,7 @@ import com.bikash.bikashBackend.filter.JwtTokenProvider;
 import com.bikash.bikashBackend.repository.RoleRepository;
 import com.bikash.bikashBackend.repository.UserRepository;
 import com.bikash.bikashBackend.util.RoleConstraint;
+import com.bikash.bikashBackend.util.UseUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -155,7 +156,7 @@ public class AuthServiceImple implements AuthService {
         if (user != null) {
             Transactions transactions = transactionService.create(user.getId(), user.getOpeningBalance(), 0, new Date(), transactionsRef);
             if (transactions != null) {
-                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), user.getOpeningBalance(),0,new Date());
+                TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), user.getOpeningBalance(),0,new Date(), UseUtil.CREDIT);
                 if (transactionDetails != null) {
                     UserBalance userBalance = userBalanceService.create(user.getId(), user.getOpeningBalance(),user.getCreatedAt());
                     if (userBalance != null) {
