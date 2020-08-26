@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BikashBackendApplication {//ok
 
-	public static void main(String[] args) {
-		SpringApplication.run(BikashBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BikashBackendApplication.class, args);
+    }
 
 }
