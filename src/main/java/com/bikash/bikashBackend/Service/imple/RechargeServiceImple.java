@@ -71,7 +71,7 @@ public class RechargeServiceImple implements RechargeService {
         Long userOrMerchant = userRepository.findUserIdByPhone(recharge.getPhone());
         Long currentLoggedAgentId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());
         UserBalance currentLoggedUserDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(currentLoggedAgentId);
-        if (userOrMerchant==null) {//if don't have any account this number
+        if (userOrMerchant == null) {//if don't have any account this number
             return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "Sorry , you don't have any user/merchant with this number ");
         }
         if (userOrMerchant != 0) {//if have any account this number
@@ -100,6 +100,9 @@ public class RechargeServiceImple implements RechargeService {
         return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
     }
 
+    /*
+    for create transaction details for agent/admin to user/merchant
+     */
     private TransactionDetails createTransactionsDetailsForAgentToUserOrMerchant(Long debitedBy, Long creditedTo, Long transactionId, Date currentDate, String transactionType) {
         TransactionDetails transactionDetails = new TransactionDetails();
         transactionDetails.setCreatedAt(currentDate);
@@ -125,14 +128,12 @@ public class RechargeServiceImple implements RechargeService {
         transactions.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         transactions.setTransactionAmount(recharge.getAmount());
         transactions.setTransactionDate(currentDate);
-        // transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
         transactions.setTransactionRef("agentToUserOrMerchant");
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
             String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
-
-            transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
+            transactions.setTransactionId(Long.parseLong(uniqueTransactionId));//set unique transactionsId
             transactions = transactionsRepository.save(transactions);
             if (transactions != null) {
                 return transactions;

@@ -48,8 +48,6 @@ public class TransactionServiceImple implements TransactionService {
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
-            //Transactions currentTransaction = transactionsRepository.findByIdAndIsActiveTrue(transactions.getId());
-            //if (currentTransaction != null) {
                 Long timestamp = System.currentTimeMillis();
                 String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
                 transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
@@ -57,7 +55,6 @@ public class TransactionServiceImple implements TransactionService {
                 if (transactions != null) {
                     return transactions;
                 }
-            //}
         }
         return null;
     }
