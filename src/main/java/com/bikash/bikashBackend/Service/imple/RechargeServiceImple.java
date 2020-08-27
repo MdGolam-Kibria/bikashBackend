@@ -58,7 +58,7 @@ public class RechargeServiceImple implements RechargeService {
             if (transactions != null) {
                 TransactionDetails transactionDetails = transactionDetailsService.create(transactions.getTransactionId(), user.getId(), 0, recharge.getAmount(), date,transactionType);
                 if (transactionDetails != null) {
-                    UserBalance userBalance = userBalanceService.create(user.getId(), recharge.getAmount(), date);
+                    UserBalance userBalance = userBalanceService.update(user.getId(), recharge.getAmount(), date);
                     if (userBalance != null) {
                         return ResponseBuilder.getSuccessResponseForTransactions(HttpStatus.OK, "Recharge Successfully", transactions.getTransactionId());
                     }

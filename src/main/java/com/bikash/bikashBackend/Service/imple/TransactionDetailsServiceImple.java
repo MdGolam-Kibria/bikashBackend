@@ -3,7 +3,7 @@ package com.bikash.bikashBackend.Service.imple;
 import com.bikash.bikashBackend.Model.TransactionDetails;
 import com.bikash.bikashBackend.Service.TransactionDetailsService;
 import com.bikash.bikashBackend.repository.TransactionDetailsRepository;
-import com.bikash.bikashBackend.util.UseUtil;
+import com.bikash.bikashBackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,12 @@ import java.util.Date;
 @Service("transactionDetailsService")
 public class TransactionDetailsServiceImple implements TransactionDetailsService {
     private final TransactionDetailsRepository transactionDetailsRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TransactionDetailsServiceImple(TransactionDetailsRepository transactionDetailsRepository) {
+    public TransactionDetailsServiceImple(TransactionDetailsRepository transactionDetailsRepository, UserRepository userRepository) {
         this.transactionDetailsRepository = transactionDetailsRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class TransactionDetailsServiceImple implements TransactionDetailsService
         transactionDetails.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         transactionDetails.setTransactionId(transactionId);
         transactionDetails.setTransactionType(transactionType);
-        transactionDetails.setDebitedBy(null);//question
+        transactionDetails.setDebitedBy(userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName()));
         transactionDetails.setCreditedTo(userId);
         transactionDetails = transactionDetailsRepository.save(transactionDetails);
         if (transactionDetails != null) {
