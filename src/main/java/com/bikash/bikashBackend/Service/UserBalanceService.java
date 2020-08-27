@@ -7,4 +7,5 @@ import java.util.Date;
 public interface UserBalanceService {
     UserBalance create(Long userId, double balance, Date createdAt);
     UserBalance update(Long userId, double balance, Date createdAt);
+    UserBalance consumeBalUpdate(Long userId, double balance, Date createdAt);
 }

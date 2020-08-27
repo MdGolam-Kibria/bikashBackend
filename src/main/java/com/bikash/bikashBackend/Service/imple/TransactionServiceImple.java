@@ -48,16 +48,16 @@ public class TransactionServiceImple implements TransactionService {
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
-            Transactions currentTransaction = transactionsRepository.findByIdAndIsActiveTrue(transactions.getId());
-            if (currentTransaction != null) {
+            //Transactions currentTransaction = transactionsRepository.findByIdAndIsActiveTrue(transactions.getId());
+            //if (currentTransaction != null) {
                 Long timestamp = System.currentTimeMillis();
-                String uniqueTransactionId = String.valueOf(timestamp).concat(userId.toString());
-                currentTransaction.setTransactionId(Long.parseLong(uniqueTransactionId));
-                currentTransaction = transactionsRepository.save(currentTransaction);//update currentTransaction for set unique Transaction id
-                if (currentTransaction != null) {
-                    return currentTransaction;
+                String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
+                transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
+                transactions = transactionsRepository.save(transactions);//update currentTransaction for set unique Transaction id
+                if (transactions != null) {
+                    return transactions;
                 }
-            }
+            //}
         }
         return null;
     }

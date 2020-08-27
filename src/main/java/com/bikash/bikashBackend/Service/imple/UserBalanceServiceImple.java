@@ -36,10 +36,26 @@ public class UserBalanceServiceImple implements UserBalanceService {
     }
 
     @Override
-    public UserBalance update(Long userId, double balance, Date updatedAt) {
+    public UserBalance update(Long userId, double balance, Date updatedAt) {//for increased balanced
         UserBalance haveUser = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(userId);
         if (haveUser != null) {
             haveUser.setBalance(haveUser.getBalance() + balance);
+            haveUser.setUpdatedAt(updatedAt);
+            haveUser.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+            UserBalance userBalance = userBalanceRepository.save(haveUser);
+            if (userBalance != null) {
+                return userBalance;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public UserBalance consumeBalUpdate(Long userId, double balance, Date updatedAt) {
+        UserBalance haveUser = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(userId);
+        if (haveUser != null) {
+            haveUser.setBalance(haveUser.getBalance() - balance);//consume here
             haveUser.setUpdatedAt(updatedAt);
             haveUser.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             UserBalance userBalance = userBalanceRepository.save(haveUser);

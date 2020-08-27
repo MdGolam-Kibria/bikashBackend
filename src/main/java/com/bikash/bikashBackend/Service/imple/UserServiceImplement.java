@@ -20,7 +20,7 @@ public class UserServiceImplement implements UserService {
     @Override
     public Response createUser(UserDto userDto) {
         return null;
-    }
+    }//this service cover from auth service implementation
 
     @Override
     public User getUserByPhone(String phone) {
