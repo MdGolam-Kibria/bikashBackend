@@ -71,7 +71,7 @@ public class RechargeServiceImple implements RechargeService {
         Long userOrMerchant = userRepository.findUserIdByPhone(recharge.getPhone());
         Long currentLoggedAgentId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());
         UserBalance currentLoggedUserDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(currentLoggedAgentId);
-        if (userOrMerchant == 0) {//if don't have any account this number
+        if (userOrMerchant==null) {//if don't have any account this number
             return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "Sorry , you don't have any user/merchant with this number ");
         }
         if (userOrMerchant != 0) {//if have any account this number
