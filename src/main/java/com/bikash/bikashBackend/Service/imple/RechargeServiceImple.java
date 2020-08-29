@@ -71,7 +71,7 @@ public class RechargeServiceImple implements RechargeService {
         Long userOrMerchant = userRepository.findUserIdByPhone(recharge.getPhone());
         Long currentLoggedAgentId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());
         UserBalance currentLoggedUserDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(currentLoggedAgentId);
-        if (userOrMerchant == null) {//if don't have any account this number
+        if (userOrMerchant == null) {//if don't have any account with this number
             return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "Sorry , you don't have any user/merchant with this number ");
         }
         if (userOrMerchant != 0) {//if have any account this number
@@ -81,12 +81,14 @@ public class RechargeServiceImple implements RechargeService {
                     UserBalance consumeAgentOrAdminBal = userBalanceService.consumeBalUpdate(currentLoggedAgentId, recharge.getAmount(), currentDate);
                     if (consumeAgentOrAdminBal != null) {//consume admin/agent bal
                         //balance increased and consume complete now create transaction and transactionsDetails
-                        Transactions transactions = createTransactionsForAgentToUserOrMerchant(recharge, currentLoggedAgentId, currentLoggedUserDetails, userOrMerchant, currentDate, timestamp);
+                        Transactions transactions = createTransactionsForAgentToUserOrMerchant(recharge, currentLoggedAgentId, currentLoggedUserDetails, userOrMerchant, currentDate, timestamp, null);
                         if (transactions != null) {//compete first transactions for user/merchant
-                            Transactions sndTransaction = createTransactionsForAgentToUserOrMerchant(recharge, currentLoggedAgentId, currentLoggedUserDetails, currentLoggedAgentId, currentDate, timestamp);
+                            Transactions sndTransaction = createTransactionsForAgentToUserOrMerchant(recharge, currentLoggedAgentId, currentLoggedUserDetails, currentLoggedAgentId, currentDate, timestamp, transactions.getTransactionId());
                             if (sndTransaction != null) {//complete snd transaction for mercent or admin
                                 TransactionDetails firstTransactionDetails = createTransactionsDetailsForAgentToUserOrMerchant(currentLoggedAgentId, userOrMerchant, sndTransaction.getTransactionId(), currentDate, UseUtil.CREDIT);//jehoto admin/agent always dibe so type always credit hobe
-                                if (firstTransactionDetails != null) {//complete transaction details
+                                if (firstTransactionDetails != null) {//complete first transaction details for credit
+                                    //snd transaction details for debit
+                                    createTransactionsDetailsForAgentToUserOrMerchant(currentLoggedAgentId, userOrMerchant, sndTransaction.getTransactionId(), currentDate, UseUtil.DEBIT);
                                     return ResponseBuilder.getSuccessResponseForTransactions(HttpStatus.OK, "Recharge Successfully", sndTransaction.getTransactionId());
                                 }
                                 return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
@@ -121,7 +123,7 @@ public class RechargeServiceImple implements RechargeService {
     /*
     for create transaction agent/admin to user/merchant
      */
-    private Transactions createTransactionsForAgentToUserOrMerchant(Recharge recharge, Long currentLoggedUserId, UserBalance currentLoggedUserDetails, Long userId, Date currentDate, Long timestamp) {
+    private Transactions createTransactionsForAgentToUserOrMerchant(Recharge recharge, Long currentLoggedUserId, UserBalance currentLoggedUserDetails, Long userId, Date currentDate, Long timestamp, Long transactionId) {
 
         Transactions transactions = new Transactions();
         transactions.setCreatedAt(currentDate);
@@ -132,9 +134,15 @@ public class RechargeServiceImple implements RechargeService {
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
-            String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
-            transactions.setTransactionId(Long.parseLong(uniqueTransactionId));//set unique transactionsId
-            transactions = transactionsRepository.save(transactions);
+            if (transactionId == null) {//if it is first transaction then make a manual transactionId
+                String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
+                transactions.setTransactionId(Long.parseLong(uniqueTransactionId));//set unique transactionsId
+                transactions = transactionsRepository.save(transactions);
+            } else {
+                //for set snd transactionId from first transaction
+                transactions.setTransactionId(transactionId);
+                transactions = transactionsRepository.save(transactions);
+            }
             if (transactions != null) {
                 return transactions;
             }
