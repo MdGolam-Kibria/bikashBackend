@@ -30,20 +30,20 @@ public class CashOutServiceImple implements CashOutService {
     }
 
     @Override
-    public TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double taka, Date date) {
+    public TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double afterAllCommissionTaka,double totalTaka,  Date date) {
         Date currentDate = new Date();
         UserBalance adminBalDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(adminId);
         UserBalance agentBalDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(agentId);
         //now increased the admin balance
-        UserBalance increasedAdminBal = userBalanceService.update(adminBalDetails.getUserId(), taka, currentDate);
+        UserBalance increasedAdminBal = userBalanceService.update(adminBalDetails.getUserId(), afterAllCommissionTaka, currentDate);
         if (increasedAdminBal != null) {
             //now consume the agent bal
             Long timestamp = System.currentTimeMillis();
-            UserBalance consumeAgentBal = userBalanceService.consumeBalUpdate(agentId, taka, currentDate);
+            UserBalance consumeAgentBal = userBalanceService.consumeBalUpdate(agentId, totalTaka, currentDate);
             if (consumeAgentBal != null) {
-                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(taka, adminId, date, timestamp);
+                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, adminId, date, timestamp);
                 if (firstTransactions != null) {//complete first transaction
-                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(taka, agentId, date, timestamp);
+                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, agentId, date, timestamp);
                     if (sndTransaction != null) {//complete snd transaction
                         //now set transaction details
                         TransactionDetails firstTransactionDetails = createTransactionDetailsForCashoutAgentToAdmin(sndTransaction.getTransactionId(), UseUtil.DEBIT, agentId, adminId);

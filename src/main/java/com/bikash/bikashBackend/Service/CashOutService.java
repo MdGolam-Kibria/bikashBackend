@@ -5,5 +5,5 @@ import com.bikash.bikashBackend.Model.TransactionDetails;
 import java.util.Date;
 
 public interface CashOutService {
-     TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double taka, Date date);
+     TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double taka,double totalTaka ,Date date);
 }

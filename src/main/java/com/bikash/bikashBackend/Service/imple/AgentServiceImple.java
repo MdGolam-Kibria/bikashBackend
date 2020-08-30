@@ -104,10 +104,13 @@ public class AgentServiceImple implements AgentService {
                     double adminCommissionperTaka = expectedCashOutBal * CashOutDemandUtil.forAdminPerTakaCommission;
 
                     double afterAllCommissionTotalBal = expectedCashOutBal - (agentCommissionPerTaka + adminCommissionperTaka);
-
-                    TransactionDetails transactionDetails = cashOutService.cashOutAgentToAdmin(haveAdmin, agentId, afterAllCommissionTotalBal, new Date());
+                        /*
+                        user balance update complete in cashOutService
+                         */
+                    TransactionDetails transactionDetails = cashOutService.cashOutAgentToAdmin(haveAdmin, agentId, afterAllCommissionTotalBal, recharge.getAmount(), new Date());
                     if (transactionDetails != null) {
-                        //now set commision
+                        //now s
+                        // et commision
                         Commission agentCommission = new Commission();
                         //distribute commission to agent
                         agentCommission.setUserId(agentId);
@@ -124,15 +127,7 @@ public class AgentServiceImple implements AgentService {
                             adminCommission.setTransactionId(transactionDetails.getTransactionId());
                             adminCommission = commissionRepository.save(adminCommission);
                             if (adminCommission != null) {
-                                //increased admin bal
-                                UserBalance increasedAdminBal = userBalanceService.update(haveAdmin, afterAllCommissionTotalBal, new Date());
-                                if (increasedAdminBal != null) {
-                                    //consume agent bal
-                                    UserBalance consumeAgentBal = userBalanceService.consumeBalUpdate(agentId, expectedCashOutBal, new Date());
-                                    if (consumeAgentBal != null) {
-                                        return ResponseBuilder.getSuccessResponseForTransactions(HttpStatus.OK, "cashOut Successfully", transactionDetails.getTransactionId());
-                                    }
-                                }
+                                return ResponseBuilder.getSuccessResponseForTransactions(HttpStatus.OK, "Cash Out Successfully", transactionDetails.getTransactionId());
                             }
                             return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
                         }
@@ -140,6 +135,7 @@ public class AgentServiceImple implements AgentService {
                 }
                 return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
             }
+            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "Sorry , You don't have enough balance for Cash Out");
         }
         return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "Bad request");
     }
