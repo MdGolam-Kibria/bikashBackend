@@ -41,9 +41,9 @@ public class CashOutServiceImple implements CashOutService {
             Long timestamp = System.currentTimeMillis();
             UserBalance consumeAgentBal = userBalanceService.consumeBalUpdate(agentId, totalTaka, currentDate);
             if (consumeAgentBal != null) {
-                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, adminId, date, timestamp, null);
+                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, totalTaka, adminId, date, timestamp, null);
                 if (firstTransactions != null) {//complete first transaction
-                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, agentId, date, timestamp, firstTransactions.getTransactionId());
+                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, totalTaka, agentId, date, timestamp, firstTransactions.getTransactionId());
                     if (sndTransaction != null) {//complete snd transaction
                         //now set transaction details
                         TransactionDetails firstTransactionDetails = createTransactionDetailsForCashoutAgentToAdmin(sndTransaction.getTransactionId(), UseUtil.DEBIT, agentId, adminId);
@@ -75,12 +75,12 @@ public class CashOutServiceImple implements CashOutService {
         return null;
     }
 
-    private Transactions createTransactionForCashoutAgentToAdmin(double taka, Long userId, Date date, Long timestamp, Long transactionId) {
+    private Transactions createTransactionForCashoutAgentToAdmin(double afterAllCommissionTaka, double totalTaka, Long userId, Date date, Long timestamp, Long transactionId) {
 
         Transactions transactions = new Transactions();
         transactions.setTransactionRef("cashOutAgentToAdmin");
         transactions.setTransactionDate(date);
-        transactions.setTransactionAmount(taka);
+        transactions.setTransactionAmount(totalTaka);
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
