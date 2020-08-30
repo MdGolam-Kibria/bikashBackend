@@ -8,6 +8,7 @@ public class UrlConstraint {
     public static final String MERCHANT = "/merchant";
     public static final String AGENT = "/agent";
     public static final String RECHARGE = "/recharge";
+    public static final String CASHOUT = "/cashout";
     private static final String VERSION = "/v1";
     private static final String API = "/api";
 
