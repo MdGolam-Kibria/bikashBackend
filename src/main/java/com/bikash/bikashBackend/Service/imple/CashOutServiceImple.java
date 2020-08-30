@@ -30,7 +30,7 @@ public class CashOutServiceImple implements CashOutService {
     }
 
     @Override
-    public TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double afterAllCommissionTaka,double totalTaka,  Date date) {
+    public TransactionDetails cashOutAgentToAdmin(Long adminId, Long agentId, double afterAllCommissionTaka, double totalTaka, Date date) {
         Date currentDate = new Date();
         UserBalance adminBalDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(adminId);
         UserBalance agentBalDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(agentId);
@@ -41,9 +41,9 @@ public class CashOutServiceImple implements CashOutService {
             Long timestamp = System.currentTimeMillis();
             UserBalance consumeAgentBal = userBalanceService.consumeBalUpdate(agentId, totalTaka, currentDate);
             if (consumeAgentBal != null) {
-                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, adminId, date, timestamp);
+                Transactions firstTransactions = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, adminId, date, timestamp, null);
                 if (firstTransactions != null) {//complete first transaction
-                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, agentId, date, timestamp);
+                    Transactions sndTransaction = createTransactionForCashoutAgentToAdmin(afterAllCommissionTaka, agentId, date, timestamp, firstTransactions.getTransactionId());
                     if (sndTransaction != null) {//complete snd transaction
                         //now set transaction details
                         TransactionDetails firstTransactionDetails = createTransactionDetailsForCashoutAgentToAdmin(sndTransaction.getTransactionId(), UseUtil.DEBIT, agentId, adminId);
@@ -75,7 +75,7 @@ public class CashOutServiceImple implements CashOutService {
         return null;
     }
 
-    private Transactions createTransactionForCashoutAgentToAdmin(double taka, Long userId, Date date, Long timestamp) {
+    private Transactions createTransactionForCashoutAgentToAdmin(double taka, Long userId, Date date, Long timestamp, Long transactionId) {
 
         Transactions transactions = new Transactions();
         transactions.setTransactionRef("cashOutAgentToAdmin");
@@ -84,9 +84,14 @@ public class CashOutServiceImple implements CashOutService {
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
-            String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
-            transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
-            transactions = transactionsRepository.save(transactions);
+            if (transactionId == null) {//i mean first transaction is complete already
+                String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
+                transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
+                transactions = transactionsRepository.save(transactions);
+            } else {
+                transactions.setTransactionId(transactionId);
+                transactions = transactionsRepository.save(transactions);
+            }
             if (transactions != null) {
                 return transactions;
             }

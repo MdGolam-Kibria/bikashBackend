@@ -110,7 +110,7 @@ public class AgentServiceImple implements AgentService {
                     TransactionDetails transactionDetails = cashOutService.cashOutAgentToAdmin(haveAdmin, agentId, afterAllCommissionTotalBal, recharge.getAmount(), new Date());
                     if (transactionDetails != null) {
                         //now s
-                        // et commision
+                        // et commission
                         Commission agentCommission = new Commission();
                         //distribute commission to agent
                         agentCommission.setUserId(agentId);

@@ -63,7 +63,7 @@ public class CreateRunTimeUserTest {
             user.setCreatedBy("RunTimeUser");
             user.setUsername("Golam Kibria");
             user.setPassword(passwordEncoder.encode(password));
-            user.setOpeningBalance(Double.parseDouble("55290"));
+            user.setOpeningBalance(Double.parseDouble("50000"));
             user.setNid(Long.parseLong("1234567890"));
             user.setPhone(phone);
             user.setEmail("golamkibria.java@gmail.com");
@@ -88,7 +88,7 @@ public class CreateRunTimeUserTest {
                 if (transactions != null) {
                     TransactionDetails transactionDetails = new TransactionDetails();
                     transactionDetails.setCreditedTo(user.getId());
-                    transactionDetails.setTransactionType(UseUtil.DEBIT);
+                    transactionDetails.setTransactionType(UseUtil.CREDIT);
                     transactionDetails.setTransactionId(transactions.getTransactionId());
                     transactionDetails = transactionDetailsRepository.save(transactionDetails);
                     if (transactionDetails != null) {
