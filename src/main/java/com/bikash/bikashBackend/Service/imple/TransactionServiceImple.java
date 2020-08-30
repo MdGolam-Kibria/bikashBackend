@@ -25,20 +25,20 @@ public class TransactionServiceImple implements TransactionService {
     public Transactions create(Long userId, double openingBalance, double transactionAmount, Date date, String transactionsRef) {
         if (openingBalance == 0) {
             //this is not a account opening time Transaction..This is another time Transaction
-            Transactions transactions = setTransaction(transactionsRef, date, transactionAmount, userId);
+            Transactions transactions = setTransaction(transactionsRef, date, transactionAmount, userId, null);
             if (transactions != null) {
                 return transactions;
             }
             return null;
         }
-        Transactions transactions = setTransaction(transactionsRef, date, openingBalance, userId);
+        Transactions transactions = setTransaction(transactionsRef, date, openingBalance, userId, null);
         if (transactions != null) {
             return transactions;
         }
         return null;
     }
 
-    private Transactions setTransaction(String transactionsRef, Date date, double transactionAmount, Long userId) {
+    public Transactions setTransaction(String transactionsRef, Date date, double transactionAmount, Long userId, Long firstTransactionId) {
         Transactions transactions = new Transactions();
         transactions.setCreatedAt(date);
         transactions.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -48,13 +48,18 @@ public class TransactionServiceImple implements TransactionService {
         transactions.setUserId(userId);
         transactions = transactionsRepository.save(transactions);
         if (transactions != null) {
+            if (firstTransactionId == null) {
                 Long timestamp = System.currentTimeMillis();
                 String uniqueTransactionId = String.valueOf(timestamp).concat(transactions.getId().toString());
                 transactions.setTransactionId(Long.parseLong(uniqueTransactionId));
                 transactions = transactionsRepository.save(transactions);//update currentTransaction for set unique Transaction id
-                if (transactions != null) {
-                    return transactions;
-                }
+            } else {
+                transactions.setTransactionId(firstTransactionId);
+                transactions = transactionsRepository.save(transactions);
+            }
+            if (transactions != null) {
+                return transactions;
+            }
         }
         return null;
     }

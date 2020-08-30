@@ -90,7 +90,7 @@ public class AgentServiceImple implements AgentService {
 
         Long haveAdmin = userRepository.findUserIdByPhone(recharge.getPhone());
         Role isAdmin = roleRepository.findByNameAndIsActiveTrue(RoleConstraint.ROLE_ADMIN.name());
-
+//how to verify this number is admin or not
         if (haveAdmin != null && isAdmin != null) {
             //now check agent  have enough many or not
             Long agentId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());

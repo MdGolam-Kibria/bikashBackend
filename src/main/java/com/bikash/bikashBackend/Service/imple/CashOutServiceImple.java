@@ -92,10 +92,7 @@ public class CashOutServiceImple implements CashOutService {
                 transactions.setTransactionId(transactionId);
                 transactions = transactionsRepository.save(transactions);
             }
-            if (transactions != null) {
-                return transactions;
-            }
-            return null;
+            return transactions;
         }
         return null;
     }
