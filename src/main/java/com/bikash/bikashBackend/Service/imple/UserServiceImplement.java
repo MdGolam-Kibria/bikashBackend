@@ -114,6 +114,22 @@ public class UserServiceImplement implements UserService {
         return ResponseBuilder.getFailureResponce(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
     }
 
+    @Override
+    public Response sendManyUserToUser(RechargeDto rechargeDto, HttpServletRequest request) {//
+//        Recharge recharge = modelMapper.map(rechargeDto, Recharge.class);
+//        Long currentUserId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());
+//        Long isAuthenticateAgentId = userRepository.findUserIdByPhone(recharge.getPhone());
+//        User agentDetails = userRepository.findByPhoneAndIsActiveTrue(rechargeDto.getPhone());
+//        if (isAuthenticateAgentId == null) {
+//            return ResponseBuilder.getFailureResponce(HttpStatus.NOT_ACCEPTABLE, "You don't have any account with this number");
+//        }
+//        if (agentDetails.getIsAgent() == false) {
+//            return ResponseBuilder.getFailureResponce(HttpStatus.BAD_REQUEST, "Sorry This is not a Agent Number");
+//        }
+
+        return null;
+    }
+
     private TransactionDetails createTransactionDetailsForCashOutUserOrMerchantToAgent(Long transactionId, String cashOutUserOrMerchantToAgent, Long debitedBy, Long creditedTo, String transactionType) {
         TransactionDetails transactionDetails = new TransactionDetails();
         transactionDetails.setTransactionId(transactionId);

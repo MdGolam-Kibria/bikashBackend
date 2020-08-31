@@ -96,7 +96,8 @@ public class AgentServiceImple implements AgentService {
             Long agentId = userRepository.findUserIdByPhone(SecurityContextHolder.getContext().getAuthentication().getName());
             UserBalance agentBalanceDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(agentId);
             if (agentBalanceDetails.getBalance() >= recharge.getAmount()) {
-                if (userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(haveAdmin) != null) {
+                UserBalance adminBalDetails = userBalanceRepository.findUserBalanceByUserIdAndIsActiveTrue(haveAdmin);
+                if (adminBalDetails.getBalance() != 0) {
                     //cashout
                     double expectedCashOutBal = recharge.getAmount();
 

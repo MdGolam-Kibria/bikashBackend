@@ -15,4 +15,5 @@ public interface UserService  {
     User getUserByPhone(String phone);
     Response getAllusers();
     Response cashOutUserOrMerchantToAgent(RechargeDto rechargeDto, HttpServletRequest request);
+    Response sendManyUserToUser(RechargeDto rechargeDto, HttpServletRequest request);
 }
